@@ -11,7 +11,14 @@ export default function ThreeScene() {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 100);
     camera.position.set(0, 0, 7);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    } catch (e) {
+      return;
+    }
+
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0, 0);

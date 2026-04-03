@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { Tag, FadeIn, InlineCode, useInView, SectionLabel, CodeBlock } from '@/components/shared';
 import Terminal from '@/components/Terminal';
 import ThreeScene from '@/components/ThreeScene';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 function StatBar() {
   const [ref, inView] = useInView(0.2);
@@ -124,18 +125,20 @@ function WatchModeSection({ navigate }: { navigate: (path: string) => void }) {
   return (
     <section style={{ position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Canvas camera={{ position: [0, 0, 6], fov: 50 }} gl={{ alpha: true, antialias: true }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[5, 5, 5]} intensity={0.8} color="#d9603a" />
-          <pointLight position={[-5, 3, 3]} intensity={0.5} color="#3d6ea8" />
-          <WavePlane />
-          <PulsingOrb position={[-3, 1.5, 0]} color="#d9603a" speed={1.2} size={0.3} />
-          <PulsingOrb position={[3.2, 1, -1]} color="#3d6ea8" speed={0.8} size={0.22} />
-          <PulsingOrb position={[0.5, 2, 0.5]} color="#b87d20" speed={1.5} size={0.18} />
-          <FileIcon position={[-3.5, -0.5, 0.5]} />
-          <FileIcon position={[3.2, 0.3, 0]} />
-          <FileIcon position={[1.8, -0.8, 0.8]} />
-        </Canvas>
+        <ErrorBoundary>
+          <Canvas camera={{ position: [0, 0, 6], fov: 50 }} gl={{ alpha: true, antialias: true }}>
+            <ambientLight intensity={0.5} />
+            <pointLight position={[5, 5, 5]} intensity={0.8} color="#d9603a" />
+            <pointLight position={[-5, 3, 3]} intensity={0.5} color="#3d6ea8" />
+            <WavePlane />
+            <PulsingOrb position={[-3, 1.5, 0]} color="#d9603a" speed={1.2} size={0.3} />
+            <PulsingOrb position={[3.2, 1, -1]} color="#3d6ea8" speed={0.8} size={0.22} />
+            <PulsingOrb position={[0.5, 2, 0.5]} color="#b87d20" speed={1.5} size={0.18} />
+            <FileIcon position={[-3.5, -0.5, 0.5]} />
+            <FileIcon position={[3.2, 0.3, 0]} />
+            <FileIcon position={[1.8, -0.8, 0.8]} />
+          </Canvas>
+        </ErrorBoundary>
       </div>
       <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(180deg, rgba(228,226,220,0.92) 0%, rgba(228,226,220,0.8) 40%, rgba(228,226,220,0.92) 100%)' }} />
 
@@ -199,7 +202,7 @@ export default function HomePage() {
   return (
     <div>
       <section ref={heroRef} style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '120px 80px 80px' }}>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><ThreeScene /></div>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><ErrorBoundary><ThreeScene /></ErrorBoundary></div>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(to right, rgba(228,226,220,1) 42%, rgba(228,226,220,.5) 68%, rgba(228,226,220,.08) 100%)' }} />
 
         <span className="floating-emoji" style={{ top: '18%', right: '24%', fontSize: '28px', animationDelay: '0s', zIndex: 2 }}>📦</span>
