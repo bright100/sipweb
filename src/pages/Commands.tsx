@@ -25,7 +25,7 @@ export default function CommandsPage() {
   };
 
   return (
-    <div style={{ padding: '100px 80px', background: 'hsl(var(--bg-sunken))', borderTop: '1px solid hsl(var(--border-dim))', minHeight: '100vh' }}>
+    <div style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', background: 'hsl(var(--bg-sunken))', borderTop: '1px solid hsl(var(--border-dim))', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <SectionLabel emoji="🛠️">CLI Reference</SectionLabel>
         <FadeIn>

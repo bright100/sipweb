@@ -23,7 +23,7 @@ export default function FeaturesPage() {
   }, []);
 
   return (
-    <div style={{ padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
       <SectionLabel emoji="✨">Core features</SectionLabel>
       <FadeIn>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(36px,5vw,64px)', fontWeight: 600, letterSpacing: '-.03em', lineHeight: 1.05, marginBottom: '64px' }}>
@@ -31,7 +31,7 @@ export default function FeaturesPage() {
           <em style={{ fontWeight: 300, color: 'hsl(var(--ink-2))' }}>to wrangle C packages. 📦</em>
         </h1>
       </FadeIn>
-      <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1px', background: 'hsl(var(--border-dim))', border: '1px solid hsl(var(--border-dim))', borderRadius: '12px', overflow: 'hidden' }}>
+      <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(270px,1fr))', gap: '1px', background: 'hsl(var(--border-dim))', border: '1px solid hsl(var(--border-dim))', borderRadius: '12px', overflow: 'hidden' }}>
         {FEATURES.map((f, i) => (
           <div key={i} className="feat-card feat-item" style={{ padding: '36px 32px', height: '100%', opacity: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
@@ -44,7 +44,7 @@ export default function FeaturesPage() {
           </div>
         ))}
       </div>
-      <div style={{ marginTop: '72px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div style={{ marginTop: '72px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '24px' }}>
         <FadeIn>
           <div style={{ padding: '40px', background: 'hsl(var(--surface))', borderRadius: '12px', border: '1px solid hsl(var(--border-dim))', height: '100%' }}>
             <div style={{ fontSize: '40px', marginBottom: '16px' }}>😤 → 😌</div>

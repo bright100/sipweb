@@ -29,7 +29,7 @@ void mylibrary_free(void);
 
   return (
     <div>
-      <section style={{ padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+      <section style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
         <SectionLabel emoji="🔷">C++ Support</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'start' }}>
           <div>
@@ -80,7 +80,7 @@ void mylibrary_free(void);
         </div>
       </section>
 
-      <section style={{ padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+      <section style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
         <SectionLabel emoji="🚫">What cpm does NOT manage</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
           <FadeIn>

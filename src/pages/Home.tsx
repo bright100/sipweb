@@ -145,10 +145,10 @@ function WatchModeSection({ navigate }: { navigate: (path: string) => void }) {
       </div>
       <div className="watch-overlay" style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
 
-      <div style={{ position: 'relative', zIndex: 2, padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+      <div style={{ position: 'relative', zIndex: 2, padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
         <SectionLabel emoji="👀">Watch Mode — like nodemon for C/C++</SectionLabel>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center', marginBottom: '64px' }}>
+        <div className="two-col-grid" style={{ marginBottom: '64px' }}>
           <FadeIn>
             <div>
               <Tag emoji="🔥" color="hsl(var(--accent-coral))">New in v0.1</Tag>
@@ -172,7 +172,7 @@ cpm run build --watch --exec ./bin/myapp`}</CodeBlock>
           </FadeIn>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: '16px' }}>
           {watchFeatures.map((f, i) => (
             <FadeIn key={i} delay={i * 70}>
               <div className="feat-card" style={{ padding: '28px 24px', borderRadius: '12px', border: '1px solid hsl(var(--border-dim))', height: '100%' }}>
@@ -204,7 +204,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section ref={heroRef} style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '120px 80px 80px' }}>
+      <section ref={heroRef} style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: 'clamp(80px,10vh,120px) clamp(16px,5vw,80px) clamp(40px,5vw,80px)' }}>
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><ErrorBoundary><ThreeScene /></ErrorBoundary></div>
         <div className="hero-overlay" style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
 
@@ -248,7 +248,7 @@ export default function HomePage() {
 
       <StatBar />
 
-      <section style={{ padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+      <section style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
         <FadeIn>
           <div style={{ textAlign: 'center', marginBottom: '56px' }}>
             <div style={{ fontSize: '40px', marginBottom: '16px', animation: 'pulse 2s ease-in-out infinite' }}>🤔</div>
@@ -258,7 +258,7 @@ export default function HomePage() {
             </p>
           </div>
         </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px', marginBottom: '48px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '20px', marginBottom: '48px' }}>
           {[
             { emoji: '🧩', title: 'No more linker hell', desc: 'PubGrub ensures globally consistent resolution. No "symbol already defined". No duplicate libraries. Ever.' },
             { emoji: '🏗️', title: 'ABI-aware by design', desc: 'Knows about compiler versions, stdlib choices, and C++ name mangling. Your build cache is smarter than you think.' },

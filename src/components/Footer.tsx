@@ -12,7 +12,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer style={{ borderTop: '1px solid hsl(var(--border-dim))', padding: '48px 80px', background: 'hsl(var(--bg-sunken))' }}>
+    <footer style={{ borderTop: '1px solid hsl(var(--border-dim))', padding: 'clamp(32px,4vw,48px) clamp(16px,5vw,80px)', background: 'hsl(var(--bg-sunken))' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', marginBottom: '28px' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>

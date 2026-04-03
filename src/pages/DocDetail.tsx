@@ -103,7 +103,7 @@ export default function DocDetailPage() {
 
   if (!doc) {
     return (
-      <div style={{ padding: '120px 80px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
         <div style={{ fontSize: '64px', marginBottom: '24px' }}>📄</div>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 600, marginBottom: '16px' }}>Page not found</h1>
         <p style={{ color: 'hsl(var(--ink-3))', marginBottom: '32px' }}>This doc page doesn't exist yet.</p>
@@ -113,7 +113,7 @@ export default function DocDetailPage() {
   }
 
   return (
-    <div style={{ padding: '100px 80px', maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '900px', margin: '0 auto' }}>
       <FadeIn>
         <Link to="/docs" style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'hsl(var(--ink-4))', letterSpacing: '.04em', display: 'inline-flex', alignItems: 'center', gap: '6px', marginBottom: '40px', transition: 'color .2s' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'hsl(var(--ink))')}

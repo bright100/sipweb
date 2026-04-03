@@ -44,7 +44,7 @@ checksum = "sha256:deadbeef1234..."
 deps     = []`;
 
   return (
-    <div style={{ padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
       <SectionLabel emoji="📄">Manifest & Lock</SectionLabel>
       <FadeIn>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(32px,4.5vw,58px)', fontWeight: 600, letterSpacing: '-.03em', marginBottom: '18px', lineHeight: 1.05 }}>

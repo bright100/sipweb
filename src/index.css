@@ -441,3 +441,24 @@
 }
 .filter-chip:hover { color: hsl(var(--ink)); border-color: hsl(var(--border)); background: hsl(var(--bg-raised)); }
 .filter-chip.active { background: hsl(var(--ink)); color: hsl(var(--background)); border-color: hsl(var(--ink)); }
+
+/* ── Responsive layout helpers ── */
+.two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .two-col-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .hero-terminal {
+    display: none !important;
+  }
+  .pkg-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

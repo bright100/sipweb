@@ -17,7 +17,7 @@ export default function DocsPage() {
   ];
 
   return (
-    <div style={{ padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', maxWidth: '1280px', margin: '0 auto' }}>
       <SectionLabel emoji="📚">Documentation</SectionLabel>
       <FadeIn>
         <div style={{ marginBottom: '56px' }}>

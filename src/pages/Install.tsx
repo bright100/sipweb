@@ -20,7 +20,7 @@ export default function InstallPage() {
   }, []);
 
   return (
-    <section style={{ padding: '100px 80px', background: 'hsl(var(--bg-sunken))', borderTop: '1px solid hsl(var(--border-dim))', minHeight: '100vh' }}>
+    <section style={{ padding: 'clamp(40px,6vw,100px) clamp(16px,5vw,80px)', background: 'hsl(var(--bg-sunken))', borderTop: '1px solid hsl(var(--border-dim))', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <SectionLabel emoji="🚀">Install</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '80px', alignItems: 'start' }}>
