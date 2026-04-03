@@ -15,6 +15,7 @@ import InstallPage from "./pages/Install";
 import DocsPage from "./pages/Docs";
 import DocDetailPage from "./pages/DocDetail";
 import PackagesPage from "./pages/Packages";
+import PackageDetail from "./pages/PackageDetail";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/" element={<HomePage />} />
               <Route path="/features" element={<FeaturesPage />} />
               <Route path="/packages" element={<PackagesPage />} />
+              <Route path="/packages/:name" element={<PackageDetail />} />
               <Route path="/commands" element={<CommandsPage />} />
               <Route path="/manifest" element={<ManifestPage />} />
               <Route path="/cpp" element={<CppSupportPage />} />

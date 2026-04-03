@@ -4,28 +4,31 @@ import gsap from 'gsap';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, MeshDistortMaterial, MeshWobbleMaterial } from '@react-three/drei';
 import * as THREE from 'three';
-import { Tag, FadeIn, InlineCode, useInView, SectionLabel, CodeBlock } from '@/components/shared';
+import { Tag, FadeIn, InlineCode, SectionLabel, CodeBlock } from '@/components/shared';
 import Terminal from '@/components/Terminal';
 import ThreeScene from '@/components/ThreeScene';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 function StatBar() {
-  const [ref, inView] = useInView(0.2);
-  const items = [
-    { val: '~200', label: 'config options', sub: 'vs 6,000 distro 😅', emoji: '⚙️' },
-    { val: '<1s', label: 'cached install time', sub: 'lightning fast ⚡', emoji: '🏎️' },
-    { val: 'SHA-256', label: 'checksum every pkg', sub: 'zero trust by default', emoji: '🔒' },
-    { val: 'PubGrub', label: 'conflict-free resolver', sub: 'no npm hell 🙏', emoji: '🧩' },
+  const facts = [
+    { code: 'cpm install fmt', result: '0.8s', note: 'cached' },
+    { code: 'SHA-256', result: 'every artifact', note: 'verified' },
+    { code: 'PubGrub', result: 'conflict-free', note: 'resolver' },
+    { code: 'postinstall', result: 'disabled', note: 'by default' },
+    { code: '~200 options', result: 'vs 6,000', note: 'in distros' },
+    { code: 'open source', result: 'MIT', note: 'licensed' },
   ];
   return (
-    <div ref={ref} style={{ borderTop: '1px solid hsl(var(--border-dim))', borderBottom: '1px solid hsl(var(--border-dim))', background: 'hsl(var(--bg-sunken))' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 80px', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
-        {items.map((item, i) => (
-          <div key={i} style={{ padding: '28px 0', paddingLeft: i > 0 ? '40px' : '0', borderRight: i < 3 ? '1px solid hsl(var(--border-dim))' : 'none', opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(14px)', transition: `all .6s ease ${i * 90}ms` }}>
-            <div style={{ fontSize: '22px', marginBottom: '6px' }}>{item.emoji}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '26px', fontWeight: 600, color: 'hsl(var(--ink))', marginBottom: '4px', letterSpacing: '-.02em' }}>{item.val}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'hsl(var(--ink-3))', letterSpacing: '.02em' }}>{item.label}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'hsl(var(--ink-4))', marginTop: '3px' }}>{item.sub}</div>
+    <div style={{ borderTop: '1px solid hsl(var(--border-dim))', borderBottom: '1px solid hsl(var(--border-dim))', background: 'hsl(var(--bg-sunken))', overflow: 'hidden' }}>
+      <div className="statbar-ticker">
+        {facts.map((f, i) => (
+          <div key={i} className="statbar-item">
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'hsl(var(--ink-2))' }}>
+              <span style={{ color: 'hsl(var(--ink-4))' }}>$ </span>{f.code}
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'hsl(var(--ink-4))' }}>→</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'hsl(var(--accent-coral))' }}>{f.result}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'hsl(var(--ink-4))' }}>({f.note})</span>
           </div>
         ))}
       </div>
@@ -140,7 +143,7 @@ function WatchModeSection({ navigate }: { navigate: (path: string) => void }) {
           </Canvas>
         </ErrorBoundary>
       </div>
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(180deg, rgba(228,226,220,0.92) 0%, rgba(228,226,220,0.8) 40%, rgba(228,226,220,0.92) 100%)' }} />
+      <div className="watch-overlay" style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
 
       <div style={{ position: 'relative', zIndex: 2, padding: '100px 80px', maxWidth: '1280px', margin: '0 auto' }}>
         <SectionLabel emoji="👀">Watch Mode — like nodemon for C/C++</SectionLabel>
@@ -203,7 +206,7 @@ export default function HomePage() {
     <div>
       <section ref={heroRef} style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '120px 80px 80px' }}>
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}><ErrorBoundary><ThreeScene /></ErrorBoundary></div>
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(to right, rgba(228,226,220,1) 42%, rgba(228,226,220,.5) 68%, rgba(228,226,220,.08) 100%)' }} />
+        <div className="hero-overlay" style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
 
         <span className="floating-emoji" style={{ top: '18%', right: '24%', fontSize: '28px', animationDelay: '0s', zIndex: 2 }}>📦</span>
         <span className="floating-emoji" style={{ top: '62%', right: '18%', fontSize: '20px', animationDelay: '1.2s', zIndex: 2 }}>⚡</span>

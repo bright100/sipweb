@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { FadeIn, SectionLabel } from '@/components/shared';
 
 const PACKAGES = [
@@ -80,7 +81,7 @@ function Badge({ children, color }: { children: string; color: string }) {
 
 function PackageCard({ pkg }: { pkg: typeof PACKAGES[0] }) {
   return (
-    <div className="pkg-card" data-testid={`card-package-${pkg.name}`}>
+    <Link to={`/packages/${encodeURIComponent(pkg.name)}`} className="pkg-card" data-testid={`card-package-${pkg.name}`}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
         <span style={{
           fontFamily: 'var(--font-mono)', fontSize: '15px', fontWeight: 500,
@@ -115,7 +116,7 @@ function PackageCard({ pkg }: { pkg: typeof PACKAGES[0] }) {
           · {timeAgo(pkg.updatedAt)}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }
 
