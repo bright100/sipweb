@@ -30,7 +30,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Nav />
-          <div style={{ paddingTop: '58px', minHeight: '100vh' }}>
+          <div className="app-content" style={{ minHeight: '100vh' }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/features" element={<FeaturesPage />} />
