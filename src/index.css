@@ -257,3 +257,154 @@
 .page-wrap {
   animation: slideUp .45s cubic-bezier(.16,1,.3,1) both;
 }
+
+/* ── Dark mode ── */
+.dark {
+  --background: 220 13% 9%;
+  --bg-raised: 220 12% 12%;
+  --bg-sunken: 220 14% 7%;
+  --foreground: 40 12% 90%;
+
+  --surface: 220 12% 13%;
+  --surface-2: 220 11% 16%;
+
+  --card: 220 12% 13%;
+  --card-foreground: 40 12% 90%;
+
+  --popover: 220 12% 13%;
+  --popover-foreground: 40 12% 90%;
+
+  --primary: 40 12% 90%;
+  --primary-foreground: 220 13% 9%;
+
+  --secondary: 220 12% 16%;
+  --secondary-foreground: 40 12% 90%;
+
+  --muted: 220 12% 16%;
+  --muted-foreground: 220 6% 55%;
+
+  --accent: 220 12% 16%;
+  --accent-foreground: 40 12% 90%;
+
+  --destructive: 0 62% 52%;
+  --destructive-foreground: 40 12% 90%;
+
+  --border: 220 10% 22%;
+  --border-dim: 220 10% 18%;
+  --input: 220 10% 22%;
+  --ring: 40 12% 90%;
+
+  --accent-warm: 24 55% 58%;
+  --accent-code: 125 35% 52%;
+  --accent-coral: 16 72% 62%;
+  --accent-sage: 140 32% 52%;
+  --accent-amber: 38 80% 56%;
+  --accent-blue: 213 60% 60%;
+
+  --ink: 40 12% 90%;
+  --ink-2: 40 8% 75%;
+  --ink-3: 40 5% 55%;
+  --ink-4: 220 5% 40%;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.25);
+  --shadow: 0 4px 12px rgba(0,0,0,.35), 0 2px 4px rgba(0,0,0,.25);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.5), 0 4px 12px rgba(0,0,0,.35);
+}
+
+.dark body { background: hsl(var(--background)); color: hsl(var(--foreground)); }
+
+.dark .nav-link { color: hsl(var(--ink-3)); }
+.dark .nav-link:hover { color: hsl(var(--ink)); }
+.dark .nav-link.active { color: hsl(var(--ink)); }
+
+.dark .feat-card { background: hsl(var(--surface)); }
+.dark .feat-card:hover { background: hsl(var(--surface-2)); }
+
+.dark .pkg-card {
+  background: hsl(var(--surface));
+  border-color: hsl(var(--border-dim));
+}
+.dark .pkg-card:hover {
+  background: hsl(var(--surface-2));
+  border-color: hsl(var(--border));
+}
+
+.dark ::-webkit-scrollbar-track { background: hsl(var(--bg-sunken)); }
+.dark ::-webkit-scrollbar-thumb { background: hsl(var(--border)); }
+
+/* Package card */
+.pkg-card {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border-dim));
+  border-radius: 10px;
+  padding: 20px 22px;
+  transition: border-color .2s, transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s, background .2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+.pkg-card:hover {
+  border-color: hsl(var(--border));
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  border-radius: 20px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: background .2s, border-color .2s, transform .15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  color: hsl(var(--ink-3));
+  font-size: 12px;
+}
+.theme-toggle:hover {
+  background: hsl(var(--bg-raised));
+  border-color: hsl(var(--border));
+  transform: translateY(-1px);
+  color: hsl(var(--ink));
+}
+
+/* Search input */
+.pkg-search {
+  background: hsl(var(--surface));
+  border: 1.5px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 12px 16px 12px 44px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: hsl(var(--ink));
+  width: 100%;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.pkg-search::placeholder { color: hsl(var(--ink-4)); }
+.pkg-search:focus { border-color: hsl(var(--ink-3)); box-shadow: 0 0 0 3px hsl(var(--ink) / .06); }
+.dark .pkg-search { background: hsl(var(--bg-sunken)); }
+
+/* Filter chip */
+.filter-chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid hsl(var(--border));
+  background: transparent;
+  color: hsl(var(--ink-3));
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.filter-chip:hover { color: hsl(var(--ink)); border-color: hsl(var(--border)); background: hsl(var(--bg-raised)); }
+.filter-chip.active { background: hsl(var(--ink)); color: hsl(var(--background)); border-color: hsl(var(--ink)); }
