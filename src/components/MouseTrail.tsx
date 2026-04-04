@@ -1,22 +1,34 @@
 import { useEffect, useRef } from 'react';
 
-interface Ripple {
-  x: number;
-  y: number;
-  born: number;
+const MAX_PTS = 48;
+const EASE    = 0.12;
+
+function catmullRom(pts: { x: number; y: number }[]) {
+  const out: { x: number; y: number }[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let s = 0; s <= 6; s++) {
+      const t = s / 6, t2 = t * t, t3 = t2 * t;
+      out.push({
+        x: 0.5 * ((2 * p1.x) + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3),
+        y: 0.5 * ((2 * p1.y) + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3),
+      });
+    }
+  }
+  return out;
 }
 
-const MAX_RADIUS = 380;
-const DURATION   = 4200;
-const REST_DELAY = 160; // ms of stillness before we consider mouse "rested"
-
 export default function MouseTrail() {
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const ripples    = useRef<Ripple[]>([]);
-  const animRef    = useRef<number>(0);
-  const mouse      = useRef({ x: -9999, y: -9999 });
-  const lastMove   = useRef(0);
-  const didRest    = useRef(false); // have we already fired a ripple for this rest?
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const raw       = useRef({ x: -9999, y: -9999 });
+  const smooth    = useRef({ x: -9999, y: -9999 });
+  const history   = useRef<{ x: number; y: number }[]>([]);
+  const animRef   = useRef<number>(0);
+  const masterAlpha = useRef(0);
+  const lastMove  = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -29,56 +41,68 @@ export default function MouseTrail() {
     window.addEventListener('resize', resize);
 
     const onMove = (e: MouseEvent) => {
-      mouse.current  = { x: e.clientX, y: e.clientY };
+      raw.current = { x: e.clientX, y: e.clientY };
       lastMove.current = performance.now();
-      didRest.current  = false; // reset so next rest spawns a fresh ripple
     };
     window.addEventListener('mousemove', onMove);
 
     const draw = (ts: number) => {
-      /* detect rest: mouse has been still for REST_DELAY ms */
-      const idle = ts - lastMove.current;
-      if (idle >= REST_DELAY && !didRest.current && mouse.current.x > -9000) {
-        didRest.current = true;
-        ripples.current.push({ x: mouse.current.x, y: mouse.current.y, born: ts });
+      /* spring the smooth position toward raw */
+      if (raw.current.x > -9000) {
+        if (smooth.current.x < -9000) smooth.current = { ...raw.current };
+        smooth.current.x += (raw.current.x - smooth.current.x) * EASE;
+        smooth.current.y += (raw.current.y - smooth.current.y) * EASE;
+        history.current.push({ x: smooth.current.x, y: smooth.current.y });
+        if (history.current.length > MAX_PTS) history.current.shift();
       }
+
+      /* fade in while moving, fade out on idle */
+      const idle   = ts - lastMove.current;
+      const target = idle < 80 ? 1 : 0;
+      const rate   = target > masterAlpha.current ? 0.18 : 0.04;
+      masterAlpha.current += (target - masterAlpha.current) * rate;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      /* prune dead ripples */
-      ripples.current = ripples.current.filter(r => ts - r.born < DURATION);
+      const pts = history.current;
+      if (pts.length < 4 || masterAlpha.current < 0.005) {
+        animRef.current = requestAnimationFrame(draw);
+        return;
+      }
 
-      for (const r of ripples.current) {
-        const age = ts - r.born;
-        const t   = age / DURATION; // 0 → 1
+      const curve = catmullRom(pts);
+      const n     = curve.length;
 
-        for (let ring = 0; ring < 3; ring++) {
-          const tRing = t - ring * 0.16;
-          if (tRing <= 0 || tRing >= 1) continue;
+      /* ── brush stroke: tapered soft stroke in two blur passes ── */
+      for (let pass = 0; pass < 2; pass++) {
+        const blur    = pass === 0 ? 9 : 3;
+        const opScale = pass === 0 ? 0.5 : 0.75;
 
-          const radius = tRing * MAX_RADIUS;
-          const alpha  = Math.pow(1 - tRing, 1.2) * 0.20;
-          const lineW  = (1 - tRing) * 1.8 + 0.3;
+        ctx.save();
+        ctx.filter = `blur(${blur}px)`;
+
+        for (let i = 1; i < n; i++) {
+          const t0 = (i - 1) / (n - 1);
+          const t1 = i       / (n - 1);
+          const p0 = curve[i - 1];
+          const p1 = curve[i];
+
+          /* taper: thin at tail, fuller in the middle, thin at head tip */
+          const bell   = Math.sin(t1 * Math.PI);        // 0→1→0
+          const width  = 1.5 + bell * 7;                // 1.5 px tail → 8.5 px peak → 1.5 px head
+          const alpha  = (0.04 + bell * 0.06) * opScale * masterAlpha.current;
 
           ctx.beginPath();
-          ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(190, 220, 255, ${alpha})`;
-          ctx.lineWidth = lineW;
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.strokeStyle = `rgba(220, 230, 245, ${alpha})`;
+          ctx.lineWidth   = width;
+          ctx.lineCap     = 'round';
+          ctx.lineJoin    = 'round';
           ctx.stroke();
-
-          /* faint lens glow on the wavefront */
-          if (ring === 0) {
-            const ga = Math.pow(1 - tRing, 3) * 0.05;
-            const g  = ctx.createRadialGradient(r.x, r.y, radius * 0.82, r.x, r.y, radius);
-            g.addColorStop(0,   `rgba(215, 235, 255, 0)`);
-            g.addColorStop(0.7, `rgba(215, 235, 255, ${ga})`);
-            g.addColorStop(1,   `rgba(215, 235, 255, 0)`);
-            ctx.beginPath();
-            ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = g;
-            ctx.fill();
-          }
         }
+
+        ctx.restore();
       }
 
       animRef.current = requestAnimationFrame(draw);
