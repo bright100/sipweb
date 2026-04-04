@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 
-const HISTORY = 48;
+const MAX_PTS = 60;
 
 export default function MouseTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const points = useRef<{ x: number; y: number }[]>([]);
+  const raw = useRef({ x: -9999, y: -9999 });
+  const smooth = useRef({ x: -9999, y: -9999 });
+  const history = useRef<{ x: number; y: number }[]>([]);
   const animRef = useRef<number>(0);
-  const timeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,94 +23,138 @@ export default function MouseTrail() {
     window.addEventListener('resize', resize);
 
     const onMove = (e: MouseEvent) => {
-      points.current.push({ x: e.clientX, y: e.clientY });
-      if (points.current.length > HISTORY) points.current.shift();
+      raw.current = { x: e.clientX, y: e.clientY };
     };
     window.addEventListener('mousemove', onMove);
 
-    const draw = (ts: number) => {
-      timeRef.current = ts * 0.001;
+    const draw = () => {
+      /* spring-follow the raw mouse position */
+      const ease = 0.18;
+      if (raw.current.x > -9000) {
+        smooth.current.x += (raw.current.x - smooth.current.x) * ease;
+        smooth.current.y += (raw.current.y - smooth.current.y) * ease;
+        history.current.push({ x: smooth.current.x, y: smooth.current.y });
+        if (history.current.length > MAX_PTS) history.current.shift();
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const pts = points.current;
-      if (pts.length < 4) {
+      const pts = history.current;
+      if (pts.length < 3) {
         animRef.current = requestAnimationFrame(draw);
         return;
       }
 
-      /* ── Draw multiple ribbon passes for glass / light effect ── */
-      const passes = [
-        { width: 28, alpha: 0.07, hueShift: 0,   blur: true  },  // wide outer glow
-        { width: 14, alpha: 0.13, hueShift: 40,  blur: false },  // mid glow
-        { width:  7, alpha: 0.30, hueShift: 80,  blur: false },  // inner ribbon
-        { width:  2, alpha: 0.90, hueShift: 160, blur: false },  // bright core
-      ];
-
-      for (const pass of passes) {
-        ctx.save();
-        if (pass.blur) {
-          ctx.filter = 'blur(6px)';
+      /* ── Build catmull-rom smooth path points ── */
+      const curve: { x: number; y: number }[] = [];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[Math.max(0, i - 1)];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[Math.min(pts.length - 1, i + 2)];
+        for (let t = 0; t < 1; t += 0.25) {
+          const t2 = t * t, t3 = t2 * t;
+          curve.push({
+            x: 0.5 * ((2*p1.x) + (-p0.x+p2.x)*t + (2*p0.x-5*p1.x+4*p2.x-p3.x)*t2 + (-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
+            y: 0.5 * ((2*p1.y) + (-p0.y+p2.y)*t + (2*p0.y-5*p1.y+4*p2.y-p3.y)*t2 + (-p0.y+3*p1.y-3*p2.y+p3.y)*t3),
+          });
         }
+      }
+      curve.push(pts[pts.length - 1]);
 
-        for (let i = 1; i < pts.length; i++) {
-          const t = i / pts.length;                 // 0 = tail, 1 = head
-          const alpha = pass.alpha * (t * t);
-          const width = pass.width * (0.2 + t * 0.8);
-
-          /* hue cycles along the ribbon + slow time drift for shimmer */
-          const hue = (t * 200 + pass.hueShift + timeRef.current * 40) % 360;
-          const sat = 70 + t * 30;
-          const lig = 70 + t * 25;
-
-          const p0 = pts[i - 1];
-          const p1 = pts[i];
-
-          ctx.beginPath();
-          ctx.moveTo(p0.x, p0.y);
-          ctx.lineTo(p1.x, p1.y);
-
-          /* gradient along each segment */
-          const seg = ctx.createLinearGradient(p0.x, p0.y, p1.x, p1.y);
-          const hPrev = ((t - 1 / pts.length) * 200 + pass.hueShift + timeRef.current * 40) % 360;
-          seg.addColorStop(0, `hsla(${hPrev}, ${sat}%, ${lig}%, ${alpha * 0.7})`);
-          seg.addColorStop(1, `hsla(${hue}, ${sat}%, ${lig}%, ${alpha})`);
-
-          ctx.strokeStyle = seg;
-          ctx.lineWidth = width;
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.globalCompositeOperation = 'lighter';
-          ctx.stroke();
-        }
-
-        ctx.restore();
+      const n = curve.length;
+      if (n < 2) {
+        animRef.current = requestAnimationFrame(draw);
+        return;
       }
 
-      /* ── Sparkle at cursor head ── */
-      if (pts.length > 0) {
-        const head = pts[pts.length - 1];
-        const sparkHue = (timeRef.current * 80) % 360;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
 
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
+      /* ── Pass 1: wide diffuse outer haze ── */
+      for (let i = 1; i < n; i++) {
+        const t = i / n;
+        const alpha = t * t * 0.06;
+        const width = 40 * t;
+        const p0 = curve[i - 1], p1 = curve[i];
 
-        const glow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 18);
-        glow.addColorStop(0,   `hsla(${sparkHue}, 100%, 95%, 0.9)`);
-        glow.addColorStop(0.3, `hsla(${sparkHue + 60}, 90%, 75%, 0.4)`);
-        glow.addColorStop(1,   `hsla(${sparkHue + 120}, 80%, 60%, 0)`);
+        const g = ctx.createLinearGradient(p0.x, p0.y, p1.x, p1.y);
+        g.addColorStop(0, `rgba(160,210,255,${alpha * 0.6})`);
+        g.addColorStop(1, `rgba(200,230,255,${alpha})`);
+
         ctx.beginPath();
-        ctx.arc(head.x, head.y, 18, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
-
-        /* tiny bright dot */
-        ctx.beginPath();
-        ctx.arc(head.x, head.y, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(0, 0%, 100%, 0.95)`;
-        ctx.fill();
-
-        ctx.restore();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.strokeStyle = g;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.filter = 'blur(8px)';
+        ctx.stroke();
       }
+      ctx.filter = 'none';
+
+      /* ── Pass 2: mid glow ── */
+      for (let i = 1; i < n; i++) {
+        const t = i / n;
+        const alpha = t * t * 0.22;
+        const width = 10 * t;
+        const p0 = curve[i - 1], p1 = curve[i];
+
+        const g = ctx.createLinearGradient(p0.x, p0.y, p1.x, p1.y);
+        g.addColorStop(0, `rgba(180,220,255,${alpha * 0.7})`);
+        g.addColorStop(1, `rgba(220,240,255,${alpha})`);
+
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.strokeStyle = g;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+      }
+
+      /* ── Pass 3: bright inner filament ── */
+      for (let i = 1; i < n; i++) {
+        const t = i / n;
+        const alpha = t * t * 0.85;
+        const width = 2.5 * t;
+        const p0 = curve[i - 1], p1 = curve[i];
+
+        const g = ctx.createLinearGradient(p0.x, p0.y, p1.x, p1.y);
+        g.addColorStop(0, `rgba(220,240,255,${alpha * 0.7})`);
+        g.addColorStop(1, `rgba(255,255,255,${alpha})`);
+
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.strokeStyle = g;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+      }
+
+      /* ── Head: crystalline burst at cursor ── */
+      const head = curve[n - 1];
+      const headGlow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 22);
+      headGlow.addColorStop(0,   'rgba(255,255,255,0.95)');
+      headGlow.addColorStop(0.2, 'rgba(200,235,255,0.50)');
+      headGlow.addColorStop(0.6, 'rgba(160,210,255,0.15)');
+      headGlow.addColorStop(1,   'rgba(140,200,255,0)');
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 22, 0, Math.PI * 2);
+      ctx.fillStyle = headGlow;
+      ctx.fill();
+
+      /* tiny diamond-bright core */
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,1)';
+      ctx.fill();
+
+      ctx.restore();
 
       animRef.current = requestAnimationFrame(draw);
     };
