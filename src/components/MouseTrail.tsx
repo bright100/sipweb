@@ -6,8 +6,8 @@ interface Ripple {
   born: number;
 }
 
-const MAX_RADIUS = 120;
-const DURATION = 1400;    // ms a ripple lives
+const MAX_RADIUS = 380;
+const DURATION = 2000;    // ms a ripple lives
 const SPAWN_INTERVAL = 80; // ms between new ripple spawns while moving
 
 export default function MouseTrail() {
