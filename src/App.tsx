@@ -19,6 +19,7 @@ import PackageDetail from "./pages/PackageDetail";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import MouseTrail from "./components/MouseTrail";
+import KonamiEgg from "./components/KonamiEgg";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
     <ThemeProvider>
       <TooltipProvider>
         <MouseTrail />
+        <KonamiEgg />
         <Toaster />
         <Sonner />
         <BrowserRouter>

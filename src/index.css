@@ -122,6 +122,31 @@
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
+/* ── Theme switch: circular spotlight wipe from toggle button ── */
+@keyframes theme-reveal {
+  from { clip-path: circle(0px at var(--theme-x, 50%) var(--theme-y, 50%)); }
+  to   { clip-path: circle(170vmax at var(--theme-x, 50%) var(--theme-y, 50%)); }
+}
+::view-transition-old(root) {
+  animation: none;
+  z-index: 0;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  z-index: 1;
+}
+
+/* ── Konami egg banner ── */
+@keyframes konamiBoom {
+  0%   { transform: scale(0.2) rotate(-8deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1)    rotate(0deg); opacity: 1; }
+}
+@keyframes konamiFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 0.75; transform: translateY(0); }
+}
+
 .nav-link {
   color: hsl(var(--ink-3));
   font-family: var(--font-mono);

@@ -110,7 +110,7 @@ export default function Nav() {
 
           {/* Theme toggle */}
           <button
-            onClick={toggle}
+            onClick={e => toggle(e.clientX, e.clientY)}
             data-testid="button-theme-toggle"
             aria-label="Toggle theme"
             style={{
@@ -177,7 +177,7 @@ export default function Nav() {
           <span style={{ fontSize: '14px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={toggle} aria-label="Toggle theme" data-testid="button-theme-toggle-mobile"
+          <button onClick={e => toggle(e.clientX, e.clientY)} aria-label="Toggle theme" data-testid="button-theme-toggle-mobile"
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '6px', borderRadius: '6px' }}>
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
