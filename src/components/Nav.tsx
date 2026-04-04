@@ -4,21 +4,21 @@ import { Tag } from './shared';
 import { useTheme } from './ThemeProvider';
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 900);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
   useEffect(() => {
-    const fn = () => setIsMobile(window.innerWidth <= 900);
+    const fn = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', fn);
     return () => window.removeEventListener('resize', fn);
   }, []);
   return isMobile;
 }
 
-const NAV_ITEMS: [string, string, string][] = [
-  ['/features',  'Features',  '✨'],
-  ['/packages',  'Packages',  '📦'],
-  ['/commands',  'Commands',  '🛠️'],
-  ['/cpp',       'C++',       '🔷'],
-  ['/docs',      'Docs',      '📚'],
+const NAV_ITEMS: [string, string][] = [
+  ['/features',  'Features'],
+  ['/packages',  'Packages'],
+  ['/commands',  'Commands'],
+  ['/cpp',       'C++'],
+  ['/docs',      'Docs'],
 ];
 
 export default function Nav() {
@@ -36,112 +36,110 @@ export default function Nav() {
 
   useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
 
-  /* ──────── DESKTOP SIDEBAR ──────── */
+  const navBg = theme === 'dark'
+    ? scrolled ? 'rgba(14,16,22,.97)' : 'hsl(var(--surface))'
+    : scrolled ? 'rgba(228,226,220,.97)' : 'hsl(var(--surface))';
+
+  /* ──────── DESKTOP TOP NAV ──────── */
   if (!isMobile) {
     return (
-      <aside style={{
-        position: 'fixed', top: 0, left: 0, bottom: 0, width: '220px', zIndex: 200,
-        display: 'flex', flexDirection: 'column',
-        background: 'hsl(var(--surface))',
-        borderRight: '1px solid hsl(var(--border-dim))',
-        padding: '0',
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        height: '60px', display: 'flex', alignItems: 'center',
+        padding: '0 clamp(20px,4vw,48px)',
+        background: navBg,
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+        borderBottom: '1px solid hsl(var(--border-dim))',
+        transition: 'background .3s',
+        gap: '0',
       }}>
         {/* Brand */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '9px', textDecoration: 'none', padding: '24px 20px 20px' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '20px', color: 'hsl(var(--ink))', letterSpacing: '-.03em' }}>cpm</span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '9px', textDecoration: 'none', flexShrink: 0 }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '19px', color: 'hsl(var(--ink))', letterSpacing: '-.03em' }}>cpm</span>
           <Tag>v0.1</Tag>
-          <span style={{ fontSize: '15px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
+          <span style={{ fontSize: '14px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
         </Link>
 
-        <div style={{ height: '1px', background: 'hsl(var(--border-dim))', margin: '0 20px 16px' }} />
-
-        {/* Nav links */}
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2px', padding: '0 10px' }}>
-          {NAV_ITEMS.map(([path, label, emoji]) => {
+        {/* Nav links — centered */}
+        <nav style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+          {NAV_ITEMS.map(([path, label]) => {
             const active = location.pathname === path || location.pathname.startsWith(path + '/');
             return (
               <Link
                 key={path}
                 to={path}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '9px 12px',
+                  padding: '6px 14px',
                   borderRadius: '6px',
-                  fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: active ? 500 : 400,
-                  color: active ? 'hsl(var(--ink))' : 'hsl(var(--ink-3))',
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '15px',
+                  fontWeight: active ? 500 : 400,
+                  color: active ? 'hsl(var(--accent-coral))' : 'hsl(var(--ink-3))',
                   background: active ? 'hsl(var(--bg-raised))' : 'transparent',
                   textDecoration: 'none',
-                  transition: 'all .15s',
-                  borderLeft: active ? '2px solid hsl(var(--ink))' : '2px solid transparent',
+                  transition: 'color .15s, background .15s',
+                  letterSpacing: '.01em',
+                  whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'hsl(var(--ink))'; e.currentTarget.style.background = 'hsl(var(--bg-raised))'; } }}
                 onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'hsl(var(--ink-3))'; e.currentTarget.style.background = 'transparent'; } }}
                 data-testid={`nav-link-${label.toLowerCase()}`}
               >
-                <span style={{ fontSize: '14px', lineHeight: 1 }}>{emoji}</span>
-                <span>{label}</span>
+                {label}
               </Link>
             );
           })}
         </nav>
 
-        <div style={{ height: '1px', background: 'hsl(var(--border-dim))', margin: '16px 20px 16px' }} />
-
-        {/* Bottom controls */}
-        <div style={{ padding: '0 10px 24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {/* Right controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
           <button
             onClick={toggle}
             data-testid="button-theme-toggle"
             aria-label="Toggle theme"
             style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '9px 12px',
-              borderRadius: '6px',
               background: 'transparent', border: 'none',
-              color: 'hsl(var(--ink-3))', fontSize: '14px',
-              cursor: 'pointer', width: '100%', textAlign: 'left',
-              transition: 'all .15s',
+              color: 'hsl(var(--ink-3))', fontSize: '16px',
+              cursor: 'pointer', padding: '6px 8px', borderRadius: '6px',
+              transition: 'background .15s',
+              lineHeight: 1,
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'hsl(var(--ink))'; e.currentTarget.style.background = 'hsl(var(--bg-raised))'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'hsl(var(--ink-3))'; e.currentTarget.style.background = 'transparent'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'hsl(var(--bg-raised))'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span style={{ fontSize: '15px' }}>{theme === 'light' ? '🌙' : '☀️'}</span>
-            <span>{theme === 'light' ? 'Dark mode' : 'Light mode'}</span>
+            {theme === 'light' ? '🌙' : '☀️'}
           </button>
           <Link
             to="/install"
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-              padding: '10px 12px',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '7px 16px',
               borderRadius: '6px',
               background: 'hsl(var(--ink))', color: 'hsl(var(--background))',
               fontFamily: 'var(--font-mono)', fontSize: '13px', letterSpacing: '.02em',
               textDecoration: 'none',
               transition: 'opacity .15s',
+              whiteSpace: 'nowrap',
             }}
             data-testid="nav-link-install"
-            onMouseEnter={e => { e.currentTarget.style.opacity = '.85'; }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '.82'; }}
             onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
           >
             Install 🚀
           </Link>
         </div>
-      </aside>
+      </header>
     );
   }
 
   /* ──────── MOBILE TOP BAR + DRAWER ──────── */
-  const mobileNavBg = theme === 'dark'
-    ? scrolled ? 'rgba(14,16,22,.95)' : 'hsl(var(--surface))'
-    : scrolled ? 'rgba(228,226,220,.95)' : 'hsl(var(--surface))';
-
   return (
     <>
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
         height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 clamp(16px,4vw,28px)',
-        background: mobileNavBg,
+        background: navBg,
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
         borderBottom: '1px solid hsl(var(--border-dim))',
         transition: 'background .3s',
@@ -152,7 +150,7 @@ export default function Nav() {
           <span style={{ fontSize: '14px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={toggle} aria-label="Toggle theme" data-testid="button-theme-toggle-mobile" className="theme-toggle">
+          <button onClick={toggle} aria-label="Toggle theme" data-testid="button-theme-toggle-mobile" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', padding: '6px', borderRadius: '6px' }}>
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
           <button
@@ -174,7 +172,6 @@ export default function Nav() {
         </div>
       </header>
 
-      {/* Mobile drawer */}
       {drawerOpen && (
         <div style={{
           position: 'fixed', top: '56px', left: 0, right: 0, bottom: 0, zIndex: 199,
@@ -184,24 +181,24 @@ export default function Nav() {
           overflowY: 'auto',
         }}>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-            {NAV_ITEMS.map(([path, label, emoji]) => {
+            {NAV_ITEMS.map(([path, label]) => {
               const active = location.pathname === path;
               return (
                 <Link
                   key={path}
                   to={path}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '12px',
+                    display: 'flex', alignItems: 'center',
                     padding: '13px 14px',
                     borderRadius: '8px',
-                    fontSize: '15px', fontWeight: active ? 500 : 400,
-                    color: active ? 'hsl(var(--ink))' : 'hsl(var(--ink-2))',
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '17px', fontWeight: active ? 500 : 400,
+                    color: active ? 'hsl(var(--accent-coral))' : 'hsl(var(--ink-2))',
                     background: active ? 'hsl(var(--bg-raised))' : 'transparent',
-                    borderLeft: active ? '2px solid hsl(var(--ink))' : '2px solid transparent',
                     textDecoration: 'none',
+                    letterSpacing: '.01em',
                   }}
                 >
-                  <span style={{ fontSize: '16px' }}>{emoji}</span>
                   {label}
                 </Link>
               );

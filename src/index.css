@@ -442,14 +442,13 @@
 .filter-chip:hover { color: hsl(var(--ink)); border-color: hsl(var(--border)); background: hsl(var(--bg-raised)); }
 .filter-chip.active { background: hsl(var(--ink)); color: hsl(var(--background)); border-color: hsl(var(--ink)); }
 
-/* ── App layout (sidebar vs top-bar) ── */
+/* ── App layout (top-bar) ── */
 .app-content {
-  margin-left: 220px;
+  padding-top: 60px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .app-content {
-    margin-left: 0;
     padding-top: 56px;
   }
 }
