@@ -258,7 +258,7 @@ export default function HomePage() {
             </p>
           </div>
         </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '20px', marginBottom: '48px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,320px))', gap: '20px', marginBottom: '48px', justifyContent: 'center' }}>
           {[
             { emoji: '🧩', title: 'No more linker hell', desc: 'PubGrub ensures globally consistent resolution. No "symbol already defined". No duplicate libraries. Ever.' },
             { emoji: '🏗️', title: 'ABI-aware by design', desc: 'Knows about compiler versions, stdlib choices, and C++ name mangling. Your build cache is smarter than you think.' },
