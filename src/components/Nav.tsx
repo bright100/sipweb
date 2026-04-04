@@ -36,137 +36,143 @@ export default function Nav() {
 
   useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
 
-  /* ──────── DESKTOP FLOATING PILL NAV ──────── */
+  /* ──────── DESKTOP VERTICAL PILL NAV ──────── */
   if (!isMobile) {
-    const pillBg = theme === 'dark'
-      ? scrolled ? 'rgba(20,19,16,.88)' : 'rgba(20,19,16,.72)'
-      : scrolled ? 'rgba(236,233,226,.92)' : 'rgba(236,233,226,.78)';
-
     return (
       <div style={{
-        position: 'fixed', top: '14px', left: 0, right: 0, zIndex: 200,
-        display: 'flex', justifyContent: 'center',
+        position: 'fixed',
+        top: 0, left: 0, bottom: 0,
+        zIndex: 200,
+        display: 'flex',
+        alignItems: 'center',
+        paddingLeft: '20px',
         pointerEvents: 'none',
       }}>
-        <header style={{
+        <nav style={{
           pointerEvents: 'all',
-          display: 'flex', alignItems: 'center',
-          gap: '6px',
-          padding: '6px 8px',
-          background: pillBg,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          gap: '2px',
+          background: theme === 'dark' ? 'rgba(20,19,16,.82)' : 'rgba(236,233,226,.82)',
           backdropFilter: 'blur(18px) saturate(1.4)',
           WebkitBackdropFilter: 'blur(18px) saturate(1.4)',
           border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.09)'}`,
           borderRadius: '999px',
-          boxShadow: scrolled
-            ? '0 8px 32px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.12)'
-            : '0 4px 16px rgba(0,0,0,.1)',
-          transition: 'background .3s, box-shadow .3s',
-          maxWidth: '800px',
-          width: 'calc(100vw - 48px)',
+          padding: '20px 10px',
+          boxShadow: '0 8px 32px rgba(0,0,0,.12)',
         }}>
-
           {/* Brand */}
-          <Link to="/" style={{
-            display: 'flex', alignItems: 'center', gap: '7px',
-            textDecoration: 'none', padding: '4px 10px',
-            borderRadius: '999px', flexShrink: 0,
-            transition: 'background .15s',
-          }}
+          <Link
+            to="/"
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: '4px', textDecoration: 'none',
+              padding: '8px 12px 12px',
+              borderRadius: '999px',
+              transition: 'background .15s',
+            }}
             onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '17px', color: 'hsl(var(--ink))', letterSpacing: '-.03em' }}>cpm</span>
-            <Tag>v0.1</Tag>
-            <span style={{ fontSize: '13px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '16px', color: 'hsl(var(--ink))', letterSpacing: '-.03em' }}>cpm</span>
+            <span style={{ fontSize: '16px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
           </Link>
 
           {/* Divider */}
-          <div style={{ width: '1px', height: '20px', background: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)', flexShrink: 0 }} />
+          <div style={{ width: '32px', height: '1px', background: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)', margin: '4px auto' }} />
 
-          {/* Nav links */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '2px', flex: 1, justifyContent: 'center' }}>
-            {NAV_ITEMS.map(([path, label]) => {
-              const active = location.pathname === path || location.pathname.startsWith(path + '/');
-              return (
-                <Link
-                  key={path}
-                  to={path}
-                  style={{
-                    padding: '5px 13px',
-                    borderRadius: '999px',
-                    fontFamily: 'var(--font-serif)',
-                    fontSize: '14px',
-                    fontWeight: active ? 500 : 400,
-                    color: active ? 'hsl(var(--accent-coral))' : 'hsl(var(--ink-2))',
-                    background: active
-                      ? (theme === 'dark' ? 'rgba(255,255,255,.09)' : 'rgba(0,0,0,.06)')
-                      : 'transparent',
-                    textDecoration: 'none',
-                    transition: 'color .15s, background .15s',
-                    whiteSpace: 'nowrap',
-                    letterSpacing: '.01em',
-                  }}
-                  onMouseEnter={e => {
-                    if (!active) {
-                      e.currentTarget.style.color = 'hsl(var(--ink))';
-                      e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (!active) {
-                      e.currentTarget.style.color = 'hsl(var(--ink-2))';
-                      e.currentTarget.style.background = 'transparent';
-                    }
-                  }}
-                  data-testid={`nav-link-${label.toLowerCase()}`}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Nav links — vertical */}
+          {NAV_ITEMS.map(([path, label]) => {
+            const active = location.pathname === path || location.pathname.startsWith(path + '/');
+            return (
+              <Link
+                key={path}
+                to={path}
+                title={label}
+                style={{
+                  writingMode: 'vertical-rl',
+                  textOrientation: 'mixed',
+                  transform: 'rotate(180deg)',
+                  padding: '14px 9px',
+                  borderRadius: '999px',
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '13px',
+                  fontWeight: active ? 600 : 400,
+                  color: active ? 'hsl(var(--accent-coral))' : 'hsl(var(--ink-3))',
+                  background: active
+                    ? (theme === 'dark' ? 'rgba(255,255,255,.09)' : 'rgba(0,0,0,.06)')
+                    : 'transparent',
+                  textDecoration: 'none',
+                  transition: 'color .15s, background .15s',
+                  letterSpacing: '.04em',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    e.currentTarget.style.color = 'hsl(var(--ink))';
+                    e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    e.currentTarget.style.color = 'hsl(var(--ink-3))';
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
+                data-testid={`nav-link-${label.toLowerCase()}`}
+              >
+                {label}
+              </Link>
+            );
+          })}
 
           {/* Divider */}
-          <div style={{ width: '1px', height: '20px', background: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)', flexShrink: 0 }} />
+          <div style={{ width: '32px', height: '1px', background: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)', margin: '4px auto' }} />
 
-          {/* Right controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-            <button
-              onClick={toggle}
-              data-testid="button-theme-toggle"
-              aria-label="Toggle theme"
-              style={{
-                background: 'transparent', border: 'none',
-                color: 'hsl(var(--ink-3))', fontSize: '15px',
-                cursor: 'pointer', padding: '5px 9px', borderRadius: '999px',
-                transition: 'background .15s', lineHeight: 1,
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-            <Link
-              to="/install"
-              style={{
-                display: 'flex', alignItems: 'center', gap: '5px',
-                padding: '6px 14px',
-                borderRadius: '999px',
-                background: 'hsl(var(--ink))', color: 'hsl(var(--background))',
-                fontFamily: 'var(--font-mono)', fontSize: '12px', letterSpacing: '.02em',
-                textDecoration: 'none',
-                transition: 'opacity .15s',
-                whiteSpace: 'nowrap',
-              }}
-              data-testid="nav-link-install"
-              onMouseEnter={e => { e.currentTarget.style.opacity = '.82'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-            >
-              Install 🚀
-            </Link>
-          </div>
-        </header>
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            data-testid="button-theme-toggle"
+            aria-label="Toggle theme"
+            style={{
+              background: 'transparent', border: 'none',
+              color: 'hsl(var(--ink-3))', fontSize: '16px',
+              cursor: 'pointer', padding: '10px', borderRadius: '999px',
+              transition: 'background .15s', lineHeight: 1,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '100%',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+
+          {/* Install */}
+          <Link
+            to="/install"
+            title="Install"
+            style={{
+              writingMode: 'vertical-rl',
+              textOrientation: 'mixed',
+              transform: 'rotate(180deg)',
+              padding: '14px 8px',
+              borderRadius: '999px',
+              background: 'hsl(var(--ink))', color: 'hsl(var(--background))',
+              fontFamily: 'var(--font-mono)', fontSize: '11px', letterSpacing: '.06em',
+              textDecoration: 'none',
+              transition: 'opacity .15s',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+            }}
+            data-testid="nav-link-install"
+            onMouseEnter={e => { e.currentTarget.style.opacity = '.82'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+          >
+            Install 🚀
+          </Link>
+        </nav>
       </div>
     );
   }
