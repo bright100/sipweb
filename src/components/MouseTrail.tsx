@@ -7,15 +7,16 @@ interface Ripple {
 }
 
 const MAX_RADIUS = 380;
-const DURATION = 4000;    // ms a ripple lives
-const SPAWN_INTERVAL = 220; // ms between new ripple spawns while moving
+const DURATION   = 4200;
+const REST_DELAY = 160; // ms of stillness before we consider mouse "rested"
 
 export default function MouseTrail() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const ripples = useRef<Ripple[]>([]);
-  const animRef = useRef<number>(0);
-  const lastSpawn = useRef(0);
-  const mouse = useRef({ x: -9999, y: -9999 });
+  const canvasRef  = useRef<HTMLCanvasElement>(null);
+  const ripples    = useRef<Ripple[]>([]);
+  const animRef    = useRef<number>(0);
+  const mouse      = useRef({ x: -9999, y: -9999 });
+  const lastMove   = useRef(0);
+  const didRest    = useRef(false); // have we already fired a ripple for this rest?
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,24 +24,25 @@ export default function MouseTrail() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize();
     window.addEventListener('resize', resize);
 
     const onMove = (e: MouseEvent) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
-      const now = performance.now();
-      if (now - lastSpawn.current > SPAWN_INTERVAL) {
-        lastSpawn.current = now;
-        ripples.current.push({ x: e.clientX, y: e.clientY, born: now });
-      }
+      mouse.current  = { x: e.clientX, y: e.clientY };
+      lastMove.current = performance.now();
+      didRest.current  = false; // reset so next rest spawns a fresh ripple
     };
     window.addEventListener('mousemove', onMove);
 
     const draw = (ts: number) => {
+      /* detect rest: mouse has been still for REST_DELAY ms */
+      const idle = ts - lastMove.current;
+      if (idle >= REST_DELAY && !didRest.current && mouse.current.x > -9000) {
+        didRest.current = true;
+        ripples.current.push({ x: mouse.current.x, y: mouse.current.y, born: ts });
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       /* prune dead ripples */
@@ -48,18 +50,15 @@ export default function MouseTrail() {
 
       for (const r of ripples.current) {
         const age = ts - r.born;
-        const t = age / DURATION;           // 0→1
+        const t   = age / DURATION; // 0 → 1
 
-        /* draw 3 rings per ripple origin, each offset in time */
         for (let ring = 0; ring < 3; ring++) {
-          const tRing = t - ring * 0.18;    // stagger rings
+          const tRing = t - ring * 0.16;
           if (tRing <= 0 || tRing >= 1) continue;
 
           const radius = tRing * MAX_RADIUS;
-          const alpha  = Math.pow(1 - tRing, 1.3) * 0.18; // slow, gentle fade
-
-          /* thin ring stroke */
-          const lineW = (1 - tRing) * 1.6 + 0.3;
+          const alpha  = Math.pow(1 - tRing, 1.2) * 0.20;
+          const lineW  = (1 - tRing) * 1.8 + 0.3;
 
           ctx.beginPath();
           ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
@@ -67,14 +66,13 @@ export default function MouseTrail() {
           ctx.lineWidth = lineW;
           ctx.stroke();
 
-          /* very faint inner fill for the slight "lens" distortion look */
+          /* faint lens glow on the wavefront */
           if (ring === 0) {
-            const innerAlpha = Math.pow(1 - tRing, 4) * 0.04;
-            const g = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, radius);
-            g.addColorStop(0,   `rgba(210, 230, 255, 0)`);
-            g.addColorStop(0.7, `rgba(210, 230, 255, 0)`);
-            g.addColorStop(0.88,`rgba(220, 235, 255, ${innerAlpha * 1.5})`);
-            g.addColorStop(1,   `rgba(210, 230, 255, 0)`);
+            const ga = Math.pow(1 - tRing, 3) * 0.05;
+            const g  = ctx.createRadialGradient(r.x, r.y, radius * 0.82, r.x, r.y, radius);
+            g.addColorStop(0,   `rgba(215, 235, 255, 0)`);
+            g.addColorStop(0.7, `rgba(215, 235, 255, ${ga})`);
+            g.addColorStop(1,   `rgba(215, 235, 255, 0)`);
             ctx.beginPath();
             ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
             ctx.fillStyle = g;
