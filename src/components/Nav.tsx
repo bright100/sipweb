@@ -54,13 +54,7 @@ export default function Nav() {
           flexDirection: 'column',
           alignItems: 'flex-start',
           gap: '2px',
-          background: theme === 'dark' ? 'rgba(20,19,16,.82)' : 'rgba(236,233,226,.82)',
-          backdropFilter: 'blur(18px) saturate(1.4)',
-          WebkitBackdropFilter: 'blur(18px) saturate(1.4)',
-          border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.09)'}`,
-          borderRadius: '999px',
           padding: '20px 10px',
-          boxShadow: '0 8px 32px rgba(0,0,0,.12)',
         }}>
           {/* Brand */}
           <Link
@@ -70,10 +64,10 @@ export default function Nav() {
               gap: '4px', textDecoration: 'none',
               padding: '8px 12px 12px',
               borderRadius: '999px',
-              transition: 'background .15s',
+              transition: 'opacity .15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '.7'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
           >
             <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '16px', color: 'hsl(var(--ink))', letterSpacing: '-.03em' }}>cpm</span>
             <span style={{ fontSize: '16px', animation: 'wiggle 3s ease-in-out infinite' }}>📦</span>
@@ -100,35 +94,19 @@ export default function Nav() {
                   fontSize: '13px',
                   fontWeight: active ? 600 : 400,
                   color: active ? 'hsl(var(--accent-coral))' : 'hsl(var(--ink-3))',
-                  background: active
-                    ? (theme === 'dark' ? 'rgba(255,255,255,.09)' : 'rgba(0,0,0,.06)')
-                    : 'transparent',
                   textDecoration: 'none',
-                  transition: 'color .15s, background .15s',
+                  transition: 'color .15s',
                   letterSpacing: '.04em',
                   whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={e => {
-                  if (!active) {
-                    e.currentTarget.style.color = 'hsl(var(--ink))';
-                    e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!active) {
-                    e.currentTarget.style.color = 'hsl(var(--ink-3))';
-                    e.currentTarget.style.background = 'transparent';
-                  }
-                }}
+                onMouseEnter={e => { if (!active) e.currentTarget.style.color = 'hsl(var(--ink))'; }}
+                onMouseLeave={e => { if (!active) e.currentTarget.style.color = 'hsl(var(--ink-3))'; }}
                 data-testid={`nav-link-${label.toLowerCase()}`}
               >
                 {label}
               </Link>
             );
           })}
-
-          {/* Divider */}
-          <div style={{ width: '32px', height: '1px', background: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.1)', margin: '4px auto' }} />
 
           {/* Theme toggle */}
           <button
@@ -139,12 +117,12 @@ export default function Nav() {
               background: 'transparent', border: 'none',
               color: 'hsl(var(--ink-3))', fontSize: '16px',
               cursor: 'pointer', padding: '10px', borderRadius: '999px',
-              transition: 'background .15s', lineHeight: 1,
+              transition: 'opacity .15s', lineHeight: 1,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: '100%',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = theme === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '.6'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
           >
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
