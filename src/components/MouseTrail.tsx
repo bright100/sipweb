@@ -7,8 +7,8 @@ interface Ripple {
 }
 
 const MAX_RADIUS = 380;
-const DURATION = 2000;    // ms a ripple lives
-const SPAWN_INTERVAL = 80; // ms between new ripple spawns while moving
+const DURATION = 4000;    // ms a ripple lives
+const SPAWN_INTERVAL = 220; // ms between new ripple spawns while moving
 
 export default function MouseTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -56,7 +56,7 @@ export default function MouseTrail() {
           if (tRing <= 0 || tRing >= 1) continue;
 
           const radius = tRing * MAX_RADIUS;
-          const alpha  = Math.pow(1 - tRing, 2) * 0.22; // fade as it expands
+          const alpha  = Math.pow(1 - tRing, 1.3) * 0.18; // slow, gentle fade
 
           /* thin ring stroke */
           const lineW = (1 - tRing) * 1.6 + 0.3;
