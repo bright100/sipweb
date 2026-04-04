@@ -18,6 +18,7 @@ import PackagesPage from "./pages/Packages";
 import PackageDetail from "./pages/PackageDetail";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import MouseTrail from "./components/MouseTrail";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
+        <MouseTrail />
         <Toaster />
         <Sonner />
         <BrowserRouter>
